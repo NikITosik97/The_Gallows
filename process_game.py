@@ -1,34 +1,55 @@
-import level_games
 from rendering import rendering
-from random import choice
 
 
-def process_game():
-    word_1 = level_games.level_1_animals[0]
-    length_word_1 = len(word_1)
-    field = ['_' for i in range(length_word_1)]
-    try_ = len(rendering)
-    print(f'Угадайте слово из {length_word_1} букв')
-    print()
-    print(*field)
-    print()
-    count = 0
-    while try_ != 0:
-        letter = input("Ваша буква: ")
-        for ind, letter_ in enumerate(word_1):
-            if letter in word_1:
-                word_index = word_1.find(letter)
-                field[word_index] = letter
-                print(*field)
-                print('Буква угадана!')
-                break
-            else:
-                print(rendering[count])
-                count += 1
-                try_ -= 1
-                break
-        if "".join(field) == word_1:
-            return 'Вы победили!'
-    return 'Вы проиграли!'
+def find_index_letter(letter: str, word: str):
+    lst_index = []
+
+    for indx, letter_ in enumerate(word):
+        if letter_ == letter:
+            lst_index.append(indx)
+
+    return lst_index
 
 
+def set_letter(indx: list, pole: list, letter: str):
+    for indx_ in indx:
+        pole[indx_] = letter
+
+    return pole
+
+
+def process_game(categories: tuple):
+    try_ = 0
+    indx_level = 0
+
+    for level in categories:
+        indx_level += 1
+        if indx_level > 1:
+            print(f"Поздравляем вы перешли на {indx_level} уровень!")
+        count_word = 0
+        print(f'Уровень {indx_level}')
+        print("-" * 10)
+        for word in level:
+            count_word += 1
+            field = ["_" for pole in range(len(word))]
+            print(f"Слово {count_word} из {len(word)} букв!")
+            print(*field)
+            while try_ < len(rendering):
+                response = input("Ваша буква: ").lower()
+                if response in word and response not in field:
+                    lst_indx = find_index_letter(response, word)
+                    print("Буква угадана!")
+                    field = set_letter(lst_indx, field, response)
+                    print("-" * 10)
+                    print(*field)
+                    print("-" * 10)
+                else:
+                    print(rendering[try_])
+                    try_ += 1
+                    print(f"У вас осталось {len(rendering) - try_} попытка!")
+                if "".join(field) == word:
+                    print("Слово угадано!")
+                    break
+            if try_ == 7:
+                return 'Вы проиграли!'
+    return "Вы прошли игру!"
